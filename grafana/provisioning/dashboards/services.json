@@ -1,0 +1,33 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Services Dashboard",
+    "panels": [
+      {
+        "type": "stat",
+        "title": "Total Patients",
+        "datasource": "PostgreSQL",
+        "targets": [
+          {
+            "rawSql": "SELECT COUNT(*) FROM patients",
+            "format": "table"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 0}
+      },
+      {
+        "type": "graph",
+        "title": "HTTP Requests",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "sum(rate(http_requests_total[5m])) by (job)",
+            "legendFormat": "{{job}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 16, "x": 8, "y": 0}
+      }
+    ]
+  },
+  "overwrite": true
+}

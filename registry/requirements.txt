@@ -1,0 +1,5 @@
+flask==2.0.3
+werkzeug==2.0.3
+sqlalchemy==1.4.36
+psycopg2-binary==2.9.5
+prometheus-client==0.17.0
