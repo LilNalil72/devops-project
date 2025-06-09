@@ -1,0 +1,63 @@
+version: '3.8'
+
+volumes:
+  postgres_data:
+  grafana_data:
+  prometheus_data:
+
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: clinic
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - clinic_network
+
+  registry-service:
+    build: devops-project/registry
+    ports:
+      - "5000:5000"
+    environment:
+      DATABASE_URL: "postgresql://admin:secret@postgres:5432/clinic"
+    networks:
+      - clinic_network
+
+  schedule-service:
+    build: devops-project/schedule
+    ports:
+      - "5001:5001"
+    environment:
+      DATABASE_URL: "postgresql://admin:secret@postgres:5432/clinic"
+    networks:
+      - clinic_network
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - clinic_network
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: grafana-secret
+    networks:
+      - clinic_network
+
+networks:
+  clinic_network:
+    driver: bridge
